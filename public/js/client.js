@@ -11,10 +11,9 @@ client.subscribe('/messages', function(message) {
 	
 	geocoder.geocode( { 'address': address, 'latLng': latlng}, function(results, status) {
 	      if (status == google.maps.GeocoderStatus.OK) {
-					alert(results[0].geometry.location);
 	        addMarker(results[0].geometry.location, "TEMP");
 	      } else {
-	        alert("Geocode was not successful for the following reason: " + status);
+					// TODO: What to do here?
 	      }
 	    });
 });

@@ -33,26 +33,24 @@ var server = http.createServer(function(request, response) {
 		if (location.pathname == '/update') {
 		  parser.parseComplete(data);
 		  
-		  //TODO: get all the incidents
-		  var suburb    = handler.dom[3].children[0].children[1].children[1].children[0].data;
-		  var street    = handler.dom[3].children[0].children[1].children[3].children[0].data;
-		  var xStreet   = handler.dom[3].children[0].children[1].children[7].children[0].data;
-		  var qualifier = handler.dom[3].children[0].children[1].children[5].children[0].data;
-	
-		console.log(suburb);
-		console.log(street);
-		console.log(xStreet);
-		console.log(qualifier);
-		  
-		  var address = street.toString() + " " + qualifier.toString() + " " +xStreet.toString() + ", " + suburb.toString() + ", NSW"; // Carrington Rd at Bronte Rd, Waverly, NSW
-		  // var address = "Carrington Rd at Bronte Rd Waverley, NSW";
-		  
-		console.log(address);
-		
-		  fServer.getClient().publish('/messages', {
-		  	title: "POST"
-      , address: address
-	    })
+			for(var key in handler.dom) {
+				if(key%2 == 1) {
+					//TODO: get all the incidents
+				  var suburb    = handler.dom[key].children[0].children[1].children[1].children[0].data;
+				  var street    = handler.dom[key].children[0].children[1].children[3].children[0].data;
+				  var xStreet   = handler.dom[key].children[0].children[1].children[7].children[0].data;
+				  var qualifier = handler.dom[key].children[0].children[1].children[5].children[0].data;
+
+				  var address = street.toString() + " " + qualifier.toString() + " " +xStreet.toString() + ", " + suburb.toString() + ", NSW"; // Carrington Rd at Bronte Rd, Waverly, NSW
+
+				console.log(address);
+
+				  fServer.getClient().publish('/messages', {
+				  	title: "POST"
+		      , address: address
+			    })
+				}
+			}
 		  
 		  response.writeHead(200);
 		  response.end("Success!");
