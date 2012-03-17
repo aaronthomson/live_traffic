@@ -1,11 +1,18 @@
 require.paths.unshift(__dirname + "/vendor");
 
-var http   = require('http'),
-		sys    = require('sys'),
-		fs     = require('fs'),
-    static = require('node-static/lib/node-static'),
-		Faye   = require('faye'),
-    url    = require('url');
+var http       = require('http'),
+		sys        = require('sys'),
+		fs         = require('fs'),
+    static     = require('node-static/lib/node-static'),
+		Faye       = require('faye'),
+    url        = require('url'),
+    htmlparser = require("htmlparser");
+
+var handler = new htmlparser.DefaultHandler(function (error, dom) {
+    // console.log(dom);
+});
+
+var parser = new htmlparser.Parser(handler);
 
 var fServer = new Faye.NodeAdapter({mount: '/faye', timeout: 45});
 var server = http.createServer(function(request, response) {
@@ -18,17 +25,37 @@ var server = http.createServer(function(request, response) {
 		var file = new static.Server('./public', {
       cache: false
     });
-		
-		if (location.pathname == '/update') {
-			fServer.getClient().publish('/messages', {
-				title: "params.title"
-      , latitude: params.lat
-      , longitude: params.lon
-		  })
-		  response.writeHead(200);
-			response.end("Success!");
-	  } else {
 			file.serve(request, response);
+	});
+	
+	request.addListener('data', function(data) {
+		var location = url.parse(request.url, true);
+		if (location.pathname == '/update') {
+		  parser.parseComplete(data);
+		  
+		  //TODO: get all the incidents
+		  var suburb    = handler.dom[3].children[0].children[1].children[1].children[0].data;
+		  var street    = handler.dom[3].children[0].children[1].children[3].children[0].data;
+		  var xStreet   = handler.dom[3].children[0].children[1].children[7].children[0].data;
+		  var qualifier = handler.dom[3].children[0].children[1].children[5].children[0].data;
+	
+		console.log(suburb);
+		console.log(street);
+		console.log(xStreet);
+		console.log(qualifier);
+		  
+		  var address = street.toString() + " " + qualifier.toString() + " " +xStreet.toString() + ", " + suburb.toString() + ", NSW"; // Carrington Rd at Bronte Rd, Waverly, NSW
+		  // var address = "Carrington Rd at Bronte Rd Waverley, NSW";
+		  
+		console.log(address);
+		
+		  fServer.getClient().publish('/messages', {
+		  	title: "POST"
+      , address: address
+	    })
+		  
+		  response.writeHead(200);
+		  response.end("Success!");
 	  }
 	});
 })
