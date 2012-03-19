@@ -47,6 +47,11 @@ server.listen(8000);
 var publishTraffic = function(data) {
 	
   xmlParser(data, function(error, result) {
+	if (error) {
+		console.log(error);
+		return;
+	}
+	
 	  for (var index in result.entry){		
 		
 		  if (result.entry[index].content != undefined){
@@ -57,14 +62,20 @@ var publishTraffic = function(data) {
 			      jquery
 			    ],
 			    done: function(errors, window) {
-			    	var street    = window.$(".tiw-rowStreetTitle").text().toLowerCase().replace('various roads', '');
+			    	var street    = window.$(".tiw-rowStreetTitle:first").text().toLowerCase().replace('various roads', '');
 			  	 	var suburb    = window.$(".tiw-rowSuburbStreetTitle").text().toLowerCase().replace('various roads', '').replace('shire council area', '');
-
-			  		var address = street + " " + suburb + ", NSW";
-			
-						var image = window.$(".tiw-rowCategoryIcon img").attr('src');
+						
+						var address = ""
+						if (street) {
+			  		  address = street + " " + suburb + ", NSW";
+						} else {
+							address = suburb + ", NSW";
+						}
 						
 						console.log(address);
+						
+						var image = window.$(".tiw-rowCategoryIcon img").attr('src');
+						
 						fServer.getClient().publish('/messages', {
 			      	address: address,
 							image: image
