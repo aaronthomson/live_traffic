@@ -104,4 +104,5 @@ var getFeeds = function() {
 		}
 };
 
-setInterval(function() { getFeeds() }, 15000);
+setTimeout(function() { getFeeds() }, 5000);
+setInterval(function() { getFeeds() }, 30000);

@@ -3,11 +3,11 @@ var markersArray = [];
 
 function initializeMap() {
 
-  var sydney = new google.maps.LatLng(-33.520, 145.969);
+  var sydney = new google.maps.LatLng(-33.420, 148.569);
   
   var myOptions = {
     center: sydney,
-    zoom: 6,
+    zoom: 7,
 		disableDefaultUI: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
