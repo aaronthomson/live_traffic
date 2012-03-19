@@ -1,8 +1,6 @@
 require.paths.unshift(__dirname + "/vendor");
 
 var http       = require('http'),
-		sys        = require('sys'),
-		fs         = require('fs'),
     static     = require('node-static/lib/node-static'),
 		Faye       = require('faye'),
     url        = require('url'),
