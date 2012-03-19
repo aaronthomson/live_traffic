@@ -13,10 +13,18 @@ function initializeMap() {
   };
   map = new google.maps.Map(document.getElementById("map_canvas"),
       myOptions);
-
-	// google.maps.event.addListener(map, 'click', function(event) {
-	//   addMarker(event.latLng, 'Hello World!');
-	// });
+			
+  var trafficOptions = {
+	  getTileUrl: function(coord, zoom) {
+	    return "http://mt3.google.com/mapstt?" +
+	    "zoom=" + zoom + "&x=" + coord.x + "&y=" + coord.y + "&client=api";
+	  },
+	  tileSize: new google.maps.Size(256, 256)
+	};
+  
+	var trafficMapType = new google.maps.ImageMapType(trafficOptions);
+	
+	map.overlayMapTypes.insertAt(0, trafficMapType);
 }
 
 function addMarker(location, image) {	
