@@ -3,11 +3,11 @@ var markersArray = [];
 
 function initializeMap() {
 
-  var sydney = new google.maps.LatLng(-33.820, 150.969);
+  var sydney = new google.maps.LatLng(-33.520, 145.969);
   
   var myOptions = {
     center: sydney,
-    zoom: 11,
+    zoom: 6,
 		disableDefaultUI: true,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
@@ -19,11 +19,11 @@ function initializeMap() {
 	// });
 }
 
-function addMarker(location, title) {
+function addMarker(location, image) {	
   marker = new google.maps.Marker({
     position: location,
     map: map,
-		title: title,
+		icon: image,
 		animation: google.maps.Animation.DROP
   });
   markersArray.push(marker);
