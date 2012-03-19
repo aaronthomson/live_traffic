@@ -7,7 +7,7 @@ function initializeMap() {
   
   var myOptions = {
     center: sydney,
-    zoom: 11,
+    zoom: 6,
 		disableDefaultUI: true,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
@@ -19,7 +19,7 @@ function initializeMap() {
 	// });
 }
 
-function addMarker(location, title) {
+function addMarker(location, title) {	
   marker = new google.maps.Marker({
     position: location,
     map: map,

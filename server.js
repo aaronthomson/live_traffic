@@ -1,12 +1,16 @@
 require.paths.unshift(__dirname + "/vendor");
 
 var http       = require('http'),
-		sys        = require('sys'),
-		fs         = require('fs'),
     static     = require('node-static/lib/node-static'),
 		Faye       = require('faye'),
     url        = require('url'),
-    htmlparser = require("htmlparser");
+    htmlparser = require("htmlparser"),
+		request    = require('request'),
+		xmlParser  = require('libxml-to-js'),
+		fs         = require('fs'),
+		jsdom      = require('jsdom');
+		
+var jquery = fs.readFileSync("./jquery-1.7.1.min.js").toString();
 
 var handler = new htmlparser.DefaultHandler(function (error, dom) {
     // console.log(dom);
@@ -42,49 +46,48 @@ server.listen(8000);
 
 var publishTraffic = function(data) {
 	
-	parser.parseComplete(data);
-	
-	console.log(Object.keys(handler.dom))
-  
-	for(var key in Object.keys(handler.dom)) {
+  xmlParser(data, function(error, result) {
+	  for (var index in result.entry){		
 		
-			var element = handler.dom[key];
-			
-			console.log("-----" + element);
-			console.log("-----" + element[0]);
-			
-			if (element != undefined) {
-			
-		    var suburb    = element.children[0].children[1].children[1].children[0].data;
-		    var street    = element.children[0].children[1].children[3].children[0].data;
-		    var xStreet   = element.children[0].children[1].children[7].children[0].data;
-		    var qualifier = element.children[0].children[1].children[5].children[0].data;
-        
-		    var address = street.toString() + " " + qualifier.toString() + " " +xStreet.toString() + ", " + suburb.toString() + ", NSW"; // Carrington Rd at Bronte Rd, Waverly, NSW
-        
-		    fServer.getClient().publish('/messages', {
-		    	title: "POST"
-        , address: address
-	      })
-			  console.log("DONE")
-		  }
-	}
-};
+		  if (result.entry[index].content != undefined){
+		
+			  jsdom.env({
+			    html: result.entry[index].content['#'],
+			    src: [
+			      jquery
+			    ],
+			    done: function(errors, window) {
+			    	var street    = window.$(".tiw-rowStreetTitle").text().toLowerCase().replace('various roads', '');
+			  	 	var suburb    = window.$(".tiw-rowSuburbStreetTitle").text().toLowerCase().replace('various roads', '').replace('shire council area', '');
 
-var feed = {
-  host: 'livetraffic.rta.nsw.gov.au',
-  port: 80,
-  path: '/traffic/rss/syd-metro.atom'
-};
-
-var getFeed = function() {
-	http.get(feed, function(res) {
-	  res.on('data', function (data) {
-		    publishTraffic(data);
-		  });
-	}).on('error', function(e) {
-	  console.log("Got error: " + e.message);
+			  		var address = street + " " + suburb + ", NSW";
+						
+						console.log(address);
+						fServer.getClient().publish('/messages', {
+			      			address: address
+			      })
+			    }
+			  });
+			}
+	  }
 	});
 };
 
-setInterval(function() { getFeed() }, 1000);
+var getFeeds = function() {	
+	var feeds = [
+		    'http://livetraffic.rta.nsw.gov.au/traffic/rss/syd-north.atom'
+	   	, 'http://livetraffic.rta.nsw.gov.au/traffic/rss/syd-south.atom'
+			, 'http://livetraffic.rta.nsw.gov.au/traffic/rss/syd-west.atom'
+			, 'http://livetraffic.rta.nsw.gov.au/traffic/rss/reg-north.atom'
+			, 'http://livetraffic.rta.nsw.gov.au/traffic/rss/reg-south.atom'
+			, 'http://livetraffic.rta.nsw.gov.au/traffic/rss/reg-west.atom'
+		];
+
+  	for(var feedIndex = 0; feedIndex < feeds.length; feedIndex++){
+			request(feeds[feedIndex], function(error, response, body){
+				publishTraffic(response.body);
+			});
+		}
+};
+
+setInterval(function() { getFeeds() }, 5000);
