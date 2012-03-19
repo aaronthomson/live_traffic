@@ -19,11 +19,11 @@ function initializeMap() {
 	// });
 }
 
-function addMarker(location, title) {	
+function addMarker(location, image) {	
   marker = new google.maps.Marker({
     position: location,
     map: map,
-		title: title,
+		icon: image,
 		animation: google.maps.Animation.DROP
   });
   markersArray.push(marker);

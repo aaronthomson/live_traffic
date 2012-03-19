@@ -61,10 +61,13 @@ var publishTraffic = function(data) {
 			  	 	var suburb    = window.$(".tiw-rowSuburbStreetTitle").text().toLowerCase().replace('various roads', '').replace('shire council area', '');
 
 			  		var address = street + " " + suburb + ", NSW";
+			
+						var image = window.$(".tiw-rowCategoryIcon img").attr('src');
 						
 						console.log(address);
 						fServer.getClient().publish('/messages', {
-			      			address: address
+			      	address: address,
+							image: image
 			      })
 			    }
 			  });
@@ -83,11 +86,11 @@ var getFeeds = function() {
 			, 'http://livetraffic.rta.nsw.gov.au/traffic/rss/reg-west.atom'
 		];
 
-  	for(var feedIndex = 0; feedIndex < feeds.length; feedIndex++){
+  	for(var feedIndex in feeds){
 			request(feeds[feedIndex], function(error, response, body){
 				publishTraffic(response.body);
 			});
 		}
 };
 
-setInterval(function() { getFeeds() }, 10000);
+setInterval(function() { getFeeds() }, 15000);
