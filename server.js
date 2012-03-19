@@ -90,4 +90,4 @@ var getFeeds = function() {
 		}
 };
 
-setInterval(function() { getFeeds() }, 5000);
+setInterval(function() { getFeeds() }, 10000);

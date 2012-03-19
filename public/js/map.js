@@ -3,7 +3,7 @@ var markersArray = [];
 
 function initializeMap() {
 
-  var sydney = new google.maps.LatLng(-33.820, 150.969);
+  var sydney = new google.maps.LatLng(-33.520, 145.969);
   
   var myOptions = {
     center: sydney,
