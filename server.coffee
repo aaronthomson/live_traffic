@@ -8,6 +8,7 @@ xmlParser = require("libxml-to-js")
 fs = require("fs")
 jsdom = require("jsdom")
 jquery = fs.readFileSync("./jquery-1.7.1.min.js").toString()
+
 handler = new htmlparser.DefaultHandler((error, dom) ->
 )
 parser = new htmlparser.Parser(handler)
@@ -15,6 +16,7 @@ fServer = new Faye.NodeAdapter(
   mount: "/faye"
   timeout: 45
 )
+
 server = http.createServer((request, response) ->
   request.addListener "end", ->
     location = url.parse(request.url, true)
@@ -33,6 +35,7 @@ server = http.createServer((request, response) ->
 )
 fServer.attach server
 server.listen 8000
+
 publishTraffic = (data) ->
   xmlParser data, (error, result) ->
     for index of result.entry
@@ -63,3 +66,7 @@ getFeeds = ->
 setTimeout (->
   getFeeds()
 ), 5000
+
+setInterval (->
+	getFeeds()
+), 30000
