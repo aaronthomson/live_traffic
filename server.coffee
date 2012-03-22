@@ -2,16 +2,11 @@ http = require("http")
 static = require("node-static")
 Faye = require("faye")
 url = require("url")
-htmlparser = require("htmlparser")
-request = require("request")
 xmlParser = require("libxml-to-js")
 fs = require("fs")
 jsdom = require("jsdom")
 jquery = fs.readFileSync("./jquery-1.7.1.min.js").toString()
 
-handler = new htmlparser.DefaultHandler((error, dom) ->
-)
-parser = new htmlparser.Parser(handler)
 fServer = new Faye.NodeAdapter(
   mount: "/faye"
   timeout: 45
